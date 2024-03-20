@@ -47,19 +47,25 @@ const Register = ({ onRegister }) => {
         username,
         password,
       });
-      console.log(response.data);
       // Clear input fields on successful registration
       setUsername('');
       setPassword('');
-      // Display success message to the user
-      setSuccess(response.data.message);
       // Call onRegister function to handle further actions
-      onRegister(response.data.username);
+      if (response && response.data && response.data.username) {
+        setSuccess('User registered successfully');
+        setError('');
+        onRegister(response.data.username);
+      } else {
+        setSuccess('');
+        setError('An error occurred. Please try again later.');
+      }
     } catch (error) {
       if (error.response && error.response.data && error.response.data.error) {
         setError(error.response.data.error);
+        setSuccess('');
       } else {
         setError('An error occurred. Please try again later.');
+        setSuccess('');
       }
     }
   };
@@ -94,3 +100,11 @@ const Register = ({ onRegister }) => {
 };
 
 export default Register;
+
+
+
+
+
+
+
+

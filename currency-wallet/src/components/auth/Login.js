@@ -16,6 +16,7 @@ const AuthInput = styled.input`
 
 const AuthButton = styled.button`
   padding: 10px;
+  margin: 10px;
   background-color: #007bff;
   color: white;
   border: none;

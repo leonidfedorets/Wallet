@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
-import { useWallet } from '../../context/WalletContext';
 import styled from 'styled-components';
+import { TransactionContext } from '../../context/TransactionContext';
 
 const FormContainer = styled.form`
   margin-top: 20px;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: #fff;
 `;
 
 const FormGroup = styled.div`
@@ -21,7 +20,7 @@ const Label = styled.label`
 `;
 
 const Input = styled.input`
-  width: 90%;
+  width: 95%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 3px;
@@ -47,31 +46,63 @@ const Button = styled.button`
   }
 `;
 
+const Message = styled.p`
+  margin-top: 10px;
+  color: ${(props) => (props.error ? 'red' : 'green')};
+`;
+
 const SendForm = () => {
-  const { wallet, updateWallet } = useWallet();
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState('USD');
   const [recipientId, setRecipientId] = useState('');
+  const [senderId, setSenderId] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+
+  const { transactions, setTransactions } = useContext(TransactionContext);
 
   const handleSend = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/wallet/send', {
-        amount,
-        currency,
-        recipientId,
-      });
-      updateWallet(response.data.wallet);
+      const requestData = {
+        amount: parseInt(amount),
+        currency: currency,
+        sender: senderId,
+        receiver: recipientId,
+      };
+
+      const response = await axios.post(
+        'http://localhost:4000/api/wallet/send',
+        requestData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      const newTransaction = response.data.transaction;
+
+      setTransactions([...transactions, newTransaction]);
+
+      setMessage('Transaction sent successfully');
+      setError('');
       setAmount('');
+      setCurrency('USD');
       setRecipientId('');
+      setSenderId('');
     } catch (error) {
       console.error(error);
+      setMessage('');
+      setError('Error sending transaction. Please try again.');
     }
   };
 
   return (
     <FormContainer onSubmit={handleSend} className="send-form">
       <h3>Send Currency</h3>
+      {message && <Message>{message}</Message>}
+      {error && <Message error>{error}</Message>}
       <FormGroup>
         <Label htmlFor="amount">Amount:</Label>
         <Input
@@ -107,9 +138,21 @@ const SendForm = () => {
           required
         />
       </FormGroup>
+      <FormGroup>
+        <Label htmlFor="senderId">Sender ID:</Label>
+        <Input
+          type="text"
+          id="senderId"
+          value={senderId}
+          onChange={(e) => setSenderId(e.target.value)}
+          required
+        />
+      </FormGroup>
       <Button type="submit">Send</Button>
     </FormContainer>
   );
 };
 
 export default SendForm;
+
+

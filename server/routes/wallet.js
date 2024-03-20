@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
+const Transaction = require('../models/Transaction');
 
+// POST route for converting currency
 router.post('/convert', async (req, res) => {
   try {
     const { fromCurrency, toCurrency, amount } = req.body;
@@ -21,5 +23,43 @@ router.post('/convert', async (req, res) => {
     res.status(500).json({ error: 'Server Error' });
   }
 });
+
+// POST route for sending currency
+router.post('/send', async (req, res) => {
+  const { sender, receiver, amount, currency } = req.body;
+
+  try {
+    // Check if sender and receiver are provided
+    if (!sender || !receiver) {
+      return res.status(400).json({ error: 'Sender and receiver are required' });
+    }
+
+    const newTransaction = new Transaction({
+      sender,
+      receiver,
+      amount,
+      currency,
+    });
+
+    await newTransaction.save();
+
+    res.status(201).json({ message: 'Transaction sent successfully', transaction: newTransaction });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred. Please try again later.' });
+  }
+});
+
+router.get('/transactions', async (req, res) => {
+  try {
+    const transactions = await Transaction.find().sort({ date: -1 });
+    res.json({ transactions });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred. Please try again later.' });
+  }
+});
+
 
 module.exports = router;
