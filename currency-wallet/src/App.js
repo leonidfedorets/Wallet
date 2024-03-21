@@ -196,9 +196,11 @@ const AppContainer = styled.div`
 
 const AuthContainer = styled.div`
   padding: 10px;
-  justify-content: space-between;
+  justify-content: flex-end;
   width: 100%;
   margin-bottom: 20px;
+  display: flex;
+  align-items: center;
 `;
 
 const AuthButton = styled.button`
@@ -208,10 +210,40 @@ const AuthButton = styled.button`
   border: none;
   border-radius: 3px;
   cursor: pointer;
+  margin-left: 10px;
 `;
 
 const LogoutButton = styled(AuthButton)`
-  background-color: red;
+  background-color: #007bff;
+`;
+
+const Avatar = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #ccc;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+`;
+
+const Username = styled.p`
+  margin: 0;
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: white;
+  padding: 5px;
+  border-radius: 3px;
+  display: none;
+  ${Avatar}:hover & {
+    display: block;
+  }
 `;
 
 const Modal = styled.div`
@@ -288,7 +320,9 @@ const App = () => {
           <AuthContainer>
             {isLoggedIn ? (
               <>
-                <p>Welcome, {username}!</p>
+                <Avatar>
+                  {username && <Username>{username.charAt(0).toUpperCase()}</Username>}
+                </Avatar>
                 <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
               </>
             ) : (
@@ -334,3 +368,8 @@ const App = () => {
 };
 
 export default App;
+
+
+
+
+

@@ -16,8 +16,8 @@ const AuthInput = styled.input`
 
 const AuthButton = styled.button`
   padding: 10px;
+  margin: 10px;
   background-color: #007bff;
-  margin-left: 20px;
   color: white;
   border: none;
   border-radius: 3px;
@@ -34,7 +34,7 @@ const SuccessMessage = styled.p`
   margin: 5px 0;
 `;
 
-const Register = ({ onRegister }) => {
+const Register = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -47,25 +47,17 @@ const Register = ({ onRegister }) => {
         username,
         password,
       });
+      console.log(response.data);
       // Clear input fields on successful registration
       setUsername('');
       setPassword('');
-      // Call onRegister function to handle further actions
-      if (response && response.data && response.data.username) {
-        setSuccess('User registered successfully');
-        setError('');
-        onRegister(response.data.username);
-      } else {
-        setSuccess('');
-        setError('An error occurred. Please try again later.');
-      }
+      // Display success message to the user
+      setSuccess(response.data.message);
     } catch (error) {
       if (error.response && error.response.data && error.response.data.error) {
         setError(error.response.data.error);
-        setSuccess('');
       } else {
         setError('An error occurred. Please try again later.');
-        setSuccess('');
       }
     }
   };
@@ -100,11 +92,5 @@ const Register = ({ onRegister }) => {
 };
 
 export default Register;
-
-
-
-
-
-
 
 

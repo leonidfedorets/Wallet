@@ -1,3 +1,5 @@
+// Updated Login Component
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
@@ -29,7 +31,7 @@ const ErrorMessage = styled.p`
   margin: 5px 0;
 `;
 
-const Login = () => {
+const Login = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -45,8 +47,8 @@ const Login = () => {
       // Clear input fields on successful login
       setUsername('');
       setPassword('');
-      // Display success message to the user
-      setError(response.data.message);
+      // Call onLogin function to handle further actions
+      onLogin(username);
     } catch (error) {
       if (error.response && error.response.data && error.response.data.error) {
         setError(error.response.data.error);
@@ -85,5 +87,4 @@ const Login = () => {
 };
 
 export default Login;
-
 
